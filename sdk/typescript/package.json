@@ -1,5 +1,5 @@
 {
-  "name": "@srp/sdk",
+  "name": "sales-reputation-protocol",
   "version": "0.1.0",
   "description": "Official TypeScript SDK for the Sales Reputation Protocol",
   "type": "module",
@@ -52,6 +52,10 @@
     "type": "git",
     "url": "https://github.com/felipeplay2sellcom/Sales-Reputation-Protocol.git",
     "directory": "sdk/typescript"
+  },
+  "homepage": "https://salesreputationprotocol.org",
+  "bugs": {
+    "url": "https://github.com/felipeplay2sellcom/Sales-Reputation-Protocol/issues"
   },
   "engines": {
     "node": ">=18.0.0"

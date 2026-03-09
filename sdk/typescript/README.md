@@ -1,11 +1,11 @@
-# @srp/sdk
+# sales-reputation-protocol
 
 Official TypeScript SDK for the [Sales Reputation Protocol](https://github.com/felipeplay2sellcom/Sales-Reputation-Protocol).
 
 ## Installation
 
 ```bash
-npm install @srp/sdk
+npm install sales-reputation-protocol
 ```
 
 ## Quick Start
@@ -13,7 +13,7 @@ npm install @srp/sdk
 ### API Client
 
 ```typescript
-import { SRPClient } from "@srp/sdk";
+import { SRPClient } from "sales-reputation-protocol";
 
 const client = new SRPClient({
   baseUrl: "https://api.example.com/v1",
@@ -52,7 +52,7 @@ console.log(`Verified: ${result.verified}`);
 import {
   buildAchievementCredential,
   generateCredentialId,
-} from "@srp/sdk";
+} from "sales-reputation-protocol";
 
 const credential = buildAchievementCredential({
   id: generateCredentialId(),
@@ -83,7 +83,7 @@ const credential = buildAchievementCredential({
 ### Score Calculation
 
 ```typescript
-import { calculateScore, getScoreTier, wilsonScore } from "@srp/sdk";
+import { calculateScore, getScoreTier, wilsonScore } from "sales-reputation-protocol";
 
 // Calculate a composite score
 const score = calculateScore({
@@ -105,7 +105,7 @@ console.log(adjusted);                 // ~0.49 (lower bound)
 ### Webhook Verification
 
 ```typescript
-import { verifyWebhookSignature, parseWebhookEvent } from "@srp/sdk";
+import { verifyWebhookSignature, parseWebhookEvent } from "sales-reputation-protocol";
 
 // In your webhook handler
 const isValid = await verifyWebhookSignature(
