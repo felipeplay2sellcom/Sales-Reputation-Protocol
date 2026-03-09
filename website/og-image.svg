@@ -1,0 +1,50 @@
+<svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#818cf8"/>
+      <stop offset="100%" style="stop-color:#06b6d4"/>
+    </linearGradient>
+    <radialGradient id="glow1" cx="85%" cy="15%" r="40%">
+      <stop offset="0%" style="stop-color:rgba(99,102,241,0.15)"/>
+      <stop offset="100%" style="stop-color:transparent"/>
+    </radialGradient>
+    <radialGradient id="glow2" cx="15%" cy="85%" r="35%">
+      <stop offset="0%" style="stop-color:rgba(6,182,212,0.1)"/>
+      <stop offset="100%" style="stop-color:transparent"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="#0a0a0f"/>
+  <rect width="1200" height="630" fill="url(#glow1)"/>
+  <rect width="1200" height="630" fill="url(#glow2)"/>
+
+  <!-- Badge -->
+  <rect x="80" y="120" width="230" height="36" rx="18" fill="rgba(99,102,241,0.1)" stroke="rgba(99,102,241,0.3)" stroke-width="1"/>
+  <circle cx="100" cy="138" r="4" fill="#22c55e"/>
+  <text x="114" y="143" font-family="-apple-system,BlinkMacSystemFont,sans-serif" font-size="14" fill="#818cf8" font-weight="500">Open Standard · v0.1.0</text>
+
+  <!-- Title line 1 -->
+  <text x="80" y="230" font-family="-apple-system,BlinkMacSystemFont,sans-serif" font-size="60" font-weight="700" letter-spacing="-2" fill="#e8e8ed">The </text>
+  <text x="195" y="230" font-family="-apple-system,BlinkMacSystemFont,sans-serif" font-size="60" font-weight="700" letter-spacing="-2" fill="url(#accent)">credit score</text>
+
+  <!-- Title line 2 -->
+  <text x="80" y="300" font-family="-apple-system,BlinkMacSystemFont,sans-serif" font-size="60" font-weight="700" letter-spacing="-2" fill="#e8e8ed">for sales professionals</text>
+
+  <!-- Subtitle -->
+  <text x="80" y="360" font-family="-apple-system,BlinkMacSystemFont,sans-serif" font-size="22" fill="#8b8b9e">An open protocol for verifiable sales performance credentials.</text>
+  <text x="80" y="392" font-family="-apple-system,BlinkMacSystemFont,sans-serif" font-size="22" fill="#8b8b9e">Portable. Privacy-preserving. Owned by the professional.</text>
+
+  <!-- Footer -->
+  <text x="80" y="570" font-family="-apple-system,BlinkMacSystemFont,sans-serif" font-size="18" fill="#5a5a6e" font-weight="500">salesreputationprotocol.org</text>
+
+  <!-- Tags -->
+  <rect x="870" y="550" width="90" height="30" rx="6" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+  <text x="892" y="570" font-family="-apple-system,BlinkMacSystemFont,sans-serif" font-size="12" fill="#8b8b9e" text-anchor="middle">W3C VC</text>
+
+  <rect x="970" y="550" width="60" height="30" rx="6" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+  <text x="1000" y="570" font-family="-apple-system,BlinkMacSystemFont,sans-serif" font-size="12" fill="#8b8b9e" text-anchor="middle">DIDs</text>
+
+  <rect x="1040" y="550" width="120" height="30" rx="6" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+  <text x="1100" y="570" font-family="-apple-system,BlinkMacSystemFont,sans-serif" font-size="12" fill="#8b8b9e" text-anchor="middle">Open Badges</text>
+</svg>
