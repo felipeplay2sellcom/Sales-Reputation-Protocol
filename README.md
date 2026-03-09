@@ -14,6 +14,7 @@
 </p>
 
 <p align="center">
+  <a href="https://www.npmjs.com/package/sales-reputation-protocol"><img src="https://img.shields.io/npm/v/sales-reputation-protocol.svg?color=cc3534" alt="npm"></a>
   <a href="https://salesreputationprotocol.org"><img src="https://img.shields.io/badge/website-salesreputationprotocol.org-6366f1.svg" alt="Website"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache%202.0-blue.svg" alt="License"></a>
   <a href="spec/v0.1.0/overview.md"><img src="https://img.shields.io/badge/spec-v0.1.0--draft-orange.svg" alt="Spec Version"></a>
