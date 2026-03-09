@@ -1,0 +1,988 @@
+openapi: "3.1.0"
+info:
+  title: Sales Reputation Protocol API
+  description: |
+    The Sales Reputation Protocol (SRP) API enables organizations to issue, verify,
+    and manage verifiable sales performance credentials.
+
+    This API specification defines the standard endpoints that any SRP-conformant
+    implementation MUST support for its role (Issuer, Holder, or Verifier).
+  version: "0.1.0"
+  license:
+    name: Apache 2.0
+    identifier: Apache-2.0
+  contact:
+    name: SRP Community
+    url: https://github.com/felipeplay2sellcom/Sales-Reputation-Protocol
+
+servers:
+  - url: https://api.example.com/v1
+    description: Example SRP Implementation
+
+security:
+  - bearerAuth: []
+  - apiKey: []
+
+tags:
+  - name: Events
+    description: Submit and query sales performance events
+  - name: Credentials
+    description: Issue, retrieve, and manage verifiable credentials
+  - name: Verification
+    description: Verify credentials and presentations
+  - name: Scores
+    description: Retrieve and query reputation scores
+  - name: Issuers
+    description: Issuer registry management
+  - name: Agents
+    description: Sales professional profiles
+  - name: Presentations
+    description: Create and manage verifiable presentations
+  - name: Webhooks
+    description: Webhook subscription management
+
+paths:
+  # ── Events ──────────────────────────────────────────────────
+  /v1/events:
+    post:
+      tags: [Events]
+      operationId: submitEvent
+      summary: Submit a sales event
+      description: |
+        Submit a new sales performance event for validation and processing.
+        The event will be validated against the SRP event schema and evidence rules.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EventInput"
+            example:
+              type: sale_completed
+              category: performance
+              subjectDid: "did:key:z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK"
+              occurredAt: "2026-03-08T15:30:00Z"
+              industry: saas
+              data:
+                dealValue: 75000
+                currency: USD
+                productCategory: enterprise_software
+                dealType: new_business
+              evidence:
+                - type: CRMRecord
+                  source: salesforce
+                  ref: "https://acme.my.salesforce.com/006xx000001abc"
+                  verifiedAt: "2026-03-08T23:59:59Z"
+      responses:
+        "201":
+          description: Event submitted successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Event"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+
+    get:
+      tags: [Events]
+      operationId: listEvents
+      summary: List events
+      parameters:
+        - name: subjectDid
+          in: query
+          schema:
+            type: string
+          description: Filter by subject DID
+        - name: type
+          in: query
+          schema:
+            type: string
+          description: Filter by event type
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [submitted, validated, active, expired, rejected, revoked]
+        - $ref: "#/components/parameters/cursor"
+        - $ref: "#/components/parameters/limit"
+      responses:
+        "200":
+          description: Paginated list of events
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EventList"
+
+  /v1/events/{eventId}:
+    get:
+      tags: [Events]
+      operationId: getEvent
+      summary: Get event details
+      parameters:
+        - name: eventId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Event details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Event"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  # ── Credentials ─────────────────────────────────────────────
+  /v1/credentials/issue:
+    post:
+      tags: [Credentials]
+      operationId: issueCredential
+      summary: Issue a reputation credential
+      description: |
+        Issue a new SRP credential based on validated events.
+        The credential will be signed by the issuer's DID key.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CredentialIssueRequest"
+      responses:
+        "201":
+          description: Credential issued
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VerifiableCredential"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+
+  /v1/credentials/{credentialId}:
+    get:
+      tags: [Credentials]
+      operationId: getCredential
+      summary: Retrieve a credential
+      parameters:
+        - name: credentialId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Credential details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VerifiableCredential"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /v1/credentials:
+    get:
+      tags: [Credentials]
+      operationId: listCredentials
+      summary: List credentials
+      parameters:
+        - name: subjectDid
+          in: query
+          schema:
+            type: string
+        - name: issuerDid
+          in: query
+          schema:
+            type: string
+        - name: type
+          in: query
+          schema:
+            type: string
+        - $ref: "#/components/parameters/cursor"
+        - $ref: "#/components/parameters/limit"
+      responses:
+        "200":
+          description: Paginated list of credentials
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CredentialList"
+
+  /v1/credentials/status:
+    post:
+      tags: [Credentials]
+      operationId: updateCredentialStatus
+      summary: Update credential status (revoke/suspend)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [credentialId, status, reason]
+              properties:
+                credentialId:
+                  type: string
+                status:
+                  type: string
+                  enum: [revoked, suspended, active]
+                reason:
+                  type: string
+      responses:
+        "200":
+          description: Status updated
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  # ── Verification ────────────────────────────────────────────
+  /v1/verify/credential:
+    post:
+      tags: [Verification]
+      operationId: verifyCredential
+      summary: Verify a credential
+      description: |
+        Verify the authenticity, integrity, and trust of a credential.
+        Checks signature, revocation status, expiration, and issuer trust level.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [credential]
+              properties:
+                credential:
+                  $ref: "#/components/schemas/VerifiableCredential"
+      responses:
+        "200":
+          description: Verification result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VerificationResult"
+
+  /v1/verify/presentation:
+    post:
+      tags: [Verification]
+      operationId: verifyPresentation
+      summary: Verify a presentation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [presentation]
+              properties:
+                presentation:
+                  type: object
+                challenge:
+                  type: string
+      responses:
+        "200":
+          description: Verification result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VerificationResult"
+
+  # ── Scores ──────────────────────────────────────────────────
+  /v1/scores/{agentDid}:
+    get:
+      tags: [Scores]
+      operationId: getScore
+      summary: Get reputation score
+      parameters:
+        - name: agentDid
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Reputation score
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ScoreResponse"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /v1/scores/{agentDid}/history:
+    get:
+      tags: [Scores]
+      operationId: getScoreHistory
+      summary: Get score history
+      parameters:
+        - name: agentDid
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: since
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - $ref: "#/components/parameters/limit"
+      responses:
+        "200":
+          description: Score history
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  subjectDid:
+                    type: string
+                  history:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        value:
+                          type: integer
+                        calculatedAt:
+                          type: string
+                          format: date-time
+
+  # ── Issuers ─────────────────────────────────────────────────
+  /v1/issuers:
+    post:
+      tags: [Issuers]
+      operationId: registerIssuer
+      summary: Register as an issuer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/IssuerRegistration"
+      responses:
+        "201":
+          description: Issuer registered
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Issuer"
+
+    get:
+      tags: [Issuers]
+      operationId: listIssuers
+      summary: List registered issuers
+      parameters:
+        - name: trustLevel
+          in: query
+          schema:
+            type: string
+            enum: [self_declared, domain_verified, platform_verified, audited]
+        - $ref: "#/components/parameters/cursor"
+        - $ref: "#/components/parameters/limit"
+      responses:
+        "200":
+          description: Paginated list of issuers
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IssuerList"
+
+  /v1/issuers/{issuerDid}:
+    get:
+      tags: [Issuers]
+      operationId: getIssuer
+      summary: Get issuer details
+      parameters:
+        - name: issuerDid
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Issuer details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Issuer"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  # ── Agents ──────────────────────────────────────────────────
+  /v1/agents/{agentDid}:
+    get:
+      tags: [Agents]
+      operationId: getAgent
+      summary: Get agent public profile
+      parameters:
+        - name: agentDid
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Agent profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AgentProfile"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /v1/agents/{agentDid}/credentials:
+    get:
+      tags: [Agents]
+      operationId: listAgentCredentials
+      summary: List agent's credentials
+      parameters:
+        - name: agentDid
+          in: path
+          required: true
+          schema:
+            type: string
+        - $ref: "#/components/parameters/cursor"
+        - $ref: "#/components/parameters/limit"
+      responses:
+        "200":
+          description: Agent's credentials
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CredentialList"
+
+  # ── Presentations ───────────────────────────────────────────
+  /v1/presentations/create:
+    post:
+      tags: [Presentations]
+      operationId: createPresentation
+      summary: Create a verifiable presentation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [holderDid, credentialIds]
+              properties:
+                holderDid:
+                  type: string
+                credentialIds:
+                  type: array
+                  items:
+                    type: string
+                selectiveDisclosure:
+                  type: object
+                  description: Claims to disclose per credential
+                challenge:
+                  type: string
+                  description: Verifier-provided challenge for freshness
+      responses:
+        "201":
+          description: Presentation created
+          content:
+            application/json:
+              schema:
+                type: object
+
+  # ── Webhooks ────────────────────────────────────────────────
+  /v1/webhooks:
+    post:
+      tags: [Webhooks]
+      operationId: registerWebhook
+      summary: Register a webhook
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WebhookRegistration"
+      responses:
+        "201":
+          description: Webhook registered
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Webhook"
+
+    get:
+      tags: [Webhooks]
+      operationId: listWebhooks
+      summary: List registered webhooks
+      responses:
+        "200":
+          description: List of webhooks
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Webhook"
+
+  /v1/webhooks/{webhookId}:
+    delete:
+      tags: [Webhooks]
+      operationId: deleteWebhook
+      summary: Remove a webhook
+      parameters:
+        - name: webhookId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Webhook removed
+
+# ── Webhook Events ──────────────────────────────────────────
+webhooks:
+  credentialIssued:
+    post:
+      summary: Credential issued notification
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WebhookEvent"
+      responses:
+        "200":
+          description: Webhook received
+
+  credentialRevoked:
+    post:
+      summary: Credential revoked notification
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WebhookEvent"
+      responses:
+        "200":
+          description: Webhook received
+
+  scoreUpdated:
+    post:
+      summary: Score updated notification
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WebhookEvent"
+      responses:
+        "200":
+          description: Webhook received
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    apiKey:
+      type: apiKey
+      in: header
+      name: X-API-Key
+
+  parameters:
+    cursor:
+      name: cursor
+      in: query
+      schema:
+        type: string
+      description: Pagination cursor
+    limit:
+      name: limit
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 25
+      description: Maximum results per page
+
+  responses:
+    BadRequest:
+      description: Bad request
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/ProblemDetail"
+    NotFound:
+      description: Resource not found
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/ProblemDetail"
+    ValidationError:
+      description: Validation error
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/ProblemDetail"
+    RateLimited:
+      description: Rate limit exceeded
+      headers:
+        Retry-After:
+          schema:
+            type: integer
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/ProblemDetail"
+
+  schemas:
+    EventInput:
+      type: object
+      required: [type, category, subjectDid, occurredAt]
+      properties:
+        type:
+          type: string
+        category:
+          type: string
+        subjectDid:
+          type: string
+        occurredAt:
+          type: string
+          format: date-time
+        industry:
+          type: string
+        data:
+          type: object
+        evidence:
+          type: array
+          items:
+            type: object
+
+    Event:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        type:
+          type: string
+        category:
+          type: string
+        issuerDid:
+          type: string
+        subjectDid:
+          type: string
+        occurredAt:
+          type: string
+          format: date-time
+        recordedAt:
+          type: string
+          format: date-time
+        status:
+          type: string
+        industry:
+          type: string
+        data:
+          type: object
+        evidence:
+          type: array
+          items:
+            type: object
+
+    EventList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/Event"
+        pagination:
+          $ref: "#/components/schemas/Pagination"
+
+    VerifiableCredential:
+      type: object
+      description: A W3C Verifiable Credential with SRP extensions
+
+    CredentialIssueRequest:
+      type: object
+      required: [subjectDid, achievementName, achievementDescription, salesCategory]
+      properties:
+        subjectDid:
+          type: string
+        achievementName:
+          type: string
+        achievementDescription:
+          type: string
+        salesCategory:
+          type: string
+        criteria:
+          type: string
+        industry:
+          type: string
+        evidence:
+          type: array
+          items:
+            type: object
+        validUntil:
+          type: string
+          format: date-time
+
+    CredentialList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/VerifiableCredential"
+        pagination:
+          $ref: "#/components/schemas/Pagination"
+
+    VerificationResult:
+      type: object
+      properties:
+        verified:
+          type: boolean
+        credential:
+          type: object
+          properties:
+            id:
+              type: string
+            type:
+              type: string
+            issuer:
+              type: string
+        checks:
+          type: object
+          properties:
+            signature:
+              type: object
+              properties:
+                passed:
+                  type: boolean
+            status:
+              type: object
+              properties:
+                passed:
+                  type: boolean
+                method:
+                  type: string
+            expiration:
+              type: object
+              properties:
+                passed:
+                  type: boolean
+                validUntil:
+                  type: string
+                  format: date-time
+            issuerTrust:
+              type: object
+              properties:
+                passed:
+                  type: boolean
+                level:
+                  type: string
+                score:
+                  type: number
+            onChainAnchor:
+              type: object
+              properties:
+                passed:
+                  type: boolean
+                chain:
+                  type: string
+                txHash:
+                  type: string
+        verifiedAt:
+          type: string
+          format: date-time
+
+    ScoreResponse:
+      type: object
+      properties:
+        subjectDid:
+          type: string
+        score:
+          type: object
+          properties:
+            value:
+              type: integer
+              minimum: 300
+              maximum: 850
+            tier:
+              type: string
+            range:
+              type: object
+              properties:
+                min:
+                  type: integer
+                max:
+                  type: integer
+        dimensions:
+          type: object
+        calculatedAt:
+          type: string
+          format: date-time
+        totalCredentials:
+          type: integer
+        window:
+          type: string
+
+    IssuerRegistration:
+      type: object
+      required: [did, name]
+      properties:
+        did:
+          type: string
+        name:
+          type: string
+        website:
+          type: string
+          format: uri
+        industry:
+          type: string
+        description:
+          type: string
+        crmIntegrations:
+          type: array
+          items:
+            type: string
+
+    Issuer:
+      type: object
+      properties:
+        did:
+          type: string
+        name:
+          type: string
+        website:
+          type: string
+        industry:
+          type: string
+        trustLevel:
+          type: string
+          enum: [self_declared, domain_verified, platform_verified, audited]
+        registeredAt:
+          type: string
+          format: date-time
+        credentialsIssued:
+          type: integer
+
+    IssuerList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/Issuer"
+        pagination:
+          $ref: "#/components/schemas/Pagination"
+
+    AgentProfile:
+      type: object
+      properties:
+        did:
+          type: string
+        displayName:
+          type: string
+        industries:
+          type: array
+          items:
+            type: string
+        score:
+          type: object
+          properties:
+            value:
+              type: integer
+            tier:
+              type: string
+        credentialCount:
+          type: integer
+        memberSince:
+          type: string
+          format: date-time
+
+    WebhookRegistration:
+      type: object
+      required: [url, events]
+      properties:
+        url:
+          type: string
+          format: uri
+        events:
+          type: array
+          items:
+            type: string
+            enum:
+              - credential.issued
+              - credential.revoked
+              - credential.suspended
+              - score.updated
+              - event.submitted
+              - event.validated
+              - issuer.registered
+        secret:
+          type: string
+          description: Shared secret for HMAC-SHA256 signature verification
+        metadata:
+          type: object
+
+    Webhook:
+      type: object
+      properties:
+        id:
+          type: string
+        url:
+          type: string
+        events:
+          type: array
+          items:
+            type: string
+        active:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+
+    WebhookEvent:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+        data:
+          type: object
+
+    Pagination:
+      type: object
+      properties:
+        cursor:
+          type: string
+          nullable: true
+        hasMore:
+          type: boolean
+        limit:
+          type: integer
+
+    ProblemDetail:
+      type: object
+      description: RFC 9457 Problem Details
+      properties:
+        type:
+          type: string
+          format: uri
+        title:
+          type: string
+        status:
+          type: integer
+        detail:
+          type: string
+        instance:
+          type: string

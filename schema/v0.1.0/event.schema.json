@@ -1,0 +1,204 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://salesreputationprotocol.org/schema/v0.1.0/event.schema.json",
+  "title": "SRP Sales Event",
+  "description": "A validated sales performance event in the Sales Reputation Protocol.",
+  "type": "object",
+  "required": ["id", "type", "category", "issuerDid", "subjectDid", "occurredAt", "recordedAt"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Unique identifier for this event."
+    },
+    "type": {
+      "type": "string",
+      "description": "Event type from the SRP taxonomy.",
+      "enum": [
+        "sale_completed",
+        "top_performer",
+        "certification_earned",
+        "mission_completed",
+        "ranking_achieved",
+        "training_completed"
+      ]
+    },
+    "category": {
+      "type": "string",
+      "description": "High-level event category.",
+      "enum": [
+        "performance",
+        "recognition",
+        "development",
+        "achievement",
+        "client_impact",
+        "peer_trust"
+      ]
+    },
+    "issuerDid": {
+      "type": "string",
+      "pattern": "^did:",
+      "description": "DID of the issuing organization."
+    },
+    "subjectDid": {
+      "type": "string",
+      "pattern": "^did:",
+      "description": "DID of the sales professional."
+    },
+    "occurredAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the event occurred."
+    },
+    "recordedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the event was recorded in the protocol."
+    },
+    "status": {
+      "type": "string",
+      "enum": ["submitted", "validated", "active", "expired", "rejected", "revoked"],
+      "default": "submitted",
+      "description": "Current lifecycle status of the event."
+    },
+    "industry": {
+      "type": "string",
+      "enum": [
+        "saas", "real_estate", "insurance", "financial_services",
+        "automotive", "retail", "healthcare", "manufacturing",
+        "telecommunications", "hospitality", "education", "other"
+      ],
+      "description": "Industry vertical for this event."
+    },
+    "data": {
+      "type": "object",
+      "description": "Event-specific payload. Structure depends on event type.",
+      "oneOf": [
+        { "$ref": "#/$defs/saleCompletedData" },
+        { "$ref": "#/$defs/topPerformerData" },
+        { "$ref": "#/$defs/certificationEarnedData" },
+        { "$ref": "#/$defs/missionCompletedData" },
+        { "$ref": "#/$defs/rankingAchievedData" },
+        { "$ref": "#/$defs/trainingCompletedData" }
+      ]
+    },
+    "evidence": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/evidence" },
+      "description": "Supporting evidence for this event."
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Additional non-verified metadata.",
+      "additionalProperties": true
+    },
+    "expiresAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When this event should no longer contribute to scoring."
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "saleCompletedData": {
+      "type": "object",
+      "properties": {
+        "dealValue": { "type": "number", "minimum": 0, "description": "Monetary value of the deal." },
+        "currency": { "type": "string", "pattern": "^[A-Z]{3}$", "description": "ISO 4217 currency code." },
+        "productCategory": { "type": "string", "description": "Category of product/service sold." },
+        "dealType": {
+          "type": "string",
+          "enum": ["new_business", "expansion", "renewal", "upsell"],
+          "description": "Type of deal."
+        },
+        "salesCycle": {
+          "type": "object",
+          "properties": {
+            "startedAt": { "type": "string", "format": "date-time" },
+            "closedAt": { "type": "string", "format": "date-time" },
+            "durationDays": { "type": "integer", "minimum": 0 }
+          }
+        },
+        "quotaContribution": { "type": "number", "minimum": 0, "description": "Fraction of quota (0.0–1.0+)." }
+      }
+    },
+    "topPerformerData": {
+      "type": "object",
+      "properties": {
+        "period": { "type": "string", "description": "Performance period (e.g., '2026-Q1')." },
+        "rank": { "type": "integer", "minimum": 1, "description": "Rank position." },
+        "totalParticipants": { "type": "integer", "minimum": 1, "description": "Total participants in ranking." },
+        "percentile": { "type": "number", "minimum": 0, "maximum": 100, "description": "Percentile rank." },
+        "metric": { "type": "string", "description": "Metric used for ranking." },
+        "scope": { "type": "string", "enum": ["team", "office", "regional", "national", "global"], "description": "Scope of the ranking." }
+      }
+    },
+    "certificationEarnedData": {
+      "type": "object",
+      "properties": {
+        "certificationName": { "type": "string" },
+        "certificationId": { "type": "string" },
+        "provider": { "type": "string" },
+        "level": { "type": "string", "enum": ["beginner", "intermediate", "advanced", "expert"] },
+        "validUntil": { "type": "string", "format": "date-time" },
+        "score": { "type": "number" },
+        "maxScore": { "type": "number" }
+      }
+    },
+    "missionCompletedData": {
+      "type": "object",
+      "properties": {
+        "missionName": { "type": "string" },
+        "missionType": { "type": "string" },
+        "target": { "type": "number" },
+        "achieved": { "type": "number" },
+        "currency": { "type": "string", "pattern": "^[A-Z]{3}$" },
+        "completionRate": { "type": "number", "minimum": 0 },
+        "difficulty": { "type": "string", "enum": ["easy", "medium", "hard", "extreme"] }
+      }
+    },
+    "rankingAchievedData": {
+      "type": "object",
+      "properties": {
+        "rankingName": { "type": "string" },
+        "position": { "type": "integer", "minimum": 1 },
+        "totalParticipants": { "type": "integer", "minimum": 1 },
+        "percentile": { "type": "number", "minimum": 0, "maximum": 100 },
+        "category": { "type": "string" },
+        "period": { "type": "string" }
+      }
+    },
+    "trainingCompletedData": {
+      "type": "object",
+      "properties": {
+        "courseName": { "type": "string" },
+        "provider": { "type": "string" },
+        "hoursCompleted": { "type": "number", "minimum": 0 },
+        "format": { "type": "string", "enum": ["online", "in_person", "hybrid"] },
+        "assessmentPassed": { "type": "boolean" },
+        "skills": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "required": ["type"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "CRMRecord",
+            "PaymentConfirmation",
+            "PlatformRecord",
+            "TrainingRecord",
+            "ThirdPartyAttestation",
+            "ClientTestimonial"
+          ]
+        },
+        "source": { "type": "string", "description": "Source system name." },
+        "ref": { "type": "string", "format": "uri", "description": "URI reference to the evidence." },
+        "verifiedAt": { "type": "string", "format": "date-time" },
+        "verifiedBy": { "type": "string", "pattern": "^did:", "description": "DID of the verifying entity." }
+      }
+    }
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+  "type": "sale_completed",
+  "category": "performance",
+  "issuerDid": "did:web:acme-corp.com",
+  "subjectDid": "did:key:z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK",
+  "occurredAt": "2026-03-08T15:30:00Z",
+  "recordedAt": "2026-03-08T23:59:59Z",
+  "status": "validated",
+  "industry": "saas",
+  "data": {
+    "dealValue": 75000,
+    "currency": "USD",
+    "productCategory": "enterprise_software",
+    "dealType": "new_business",
+    "salesCycle": {
+      "startedAt": "2025-12-01T00:00:00Z",
+      "closedAt": "2026-03-08T15:30:00Z",
+      "durationDays": 97
+    },
+    "quotaContribution": 0.15
+  },
+  "evidence": [
+    {
+      "type": "CRMRecord",
+      "source": "salesforce",
+      "ref": "https://acme.my.salesforce.com/006xx000001abcDEF",
+      "verifiedAt": "2026-03-08T23:59:59Z",
+      "verifiedBy": "did:web:acme-corp.com"
+    },
+    {
+      "type": "PaymentConfirmation",
+      "source": "stripe",
+      "ref": "https://dashboard.stripe.com/payments/pi_3abc123",
+      "verifiedAt": "2026-03-09T00:05:00Z"
+    }
+  ]
+}

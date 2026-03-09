@@ -1,0 +1,118 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://salesreputationprotocol.org/schema/v0.1.0/score.schema.json",
+  "title": "SRP Sales Reputation Score",
+  "description": "A Sales Reputation Score response in the Sales Reputation Protocol.",
+  "type": "object",
+  "required": ["subjectDid", "score", "calculatedAt"],
+  "properties": {
+    "subjectDid": {
+      "type": "string",
+      "pattern": "^did:",
+      "description": "DID of the scored sales professional."
+    },
+    "score": {
+      "type": "object",
+      "required": ["value", "tier", "range"],
+      "properties": {
+        "value": {
+          "type": "integer",
+          "minimum": 300,
+          "maximum": 850,
+          "description": "The composite Sales Reputation Score."
+        },
+        "tier": {
+          "type": "string",
+          "enum": ["poor", "below_average", "good", "very_good", "exceptional"],
+          "description": "Human-readable tier label."
+        },
+        "range": {
+          "type": "object",
+          "properties": {
+            "min": { "type": "integer", "const": 300 },
+            "max": { "type": "integer", "const": 850 }
+          },
+          "description": "Score range boundaries."
+        }
+      }
+    },
+    "dimensions": {
+      "type": "object",
+      "description": "Score breakdown by dimension.",
+      "properties": {
+        "performance": {
+          "type": "object",
+          "properties": {
+            "normalized": { "type": "number", "minimum": 0, "maximum": 1 },
+            "weight": { "type": "number", "const": 0.30 },
+            "contribution": { "type": "number" },
+            "credentialCount": { "type": "integer", "minimum": 0 }
+          }
+        },
+        "reliability": {
+          "type": "object",
+          "properties": {
+            "normalized": { "type": "number", "minimum": 0, "maximum": 1 },
+            "weight": { "type": "number", "const": 0.25 },
+            "contribution": { "type": "number" },
+            "credentialCount": { "type": "integer", "minimum": 0 }
+          }
+        },
+        "clientImpact": {
+          "type": "object",
+          "properties": {
+            "normalized": { "type": "number", "minimum": 0, "maximum": 1 },
+            "weight": { "type": "number", "const": 0.20 },
+            "contribution": { "type": "number" },
+            "credentialCount": { "type": "integer", "minimum": 0 }
+          }
+        },
+        "professionalGrowth": {
+          "type": "object",
+          "properties": {
+            "normalized": { "type": "number", "minimum": 0, "maximum": 1 },
+            "weight": { "type": "number", "const": 0.15 },
+            "contribution": { "type": "number" },
+            "credentialCount": { "type": "integer", "minimum": 0 }
+          }
+        },
+        "peerTrust": {
+          "type": "object",
+          "properties": {
+            "normalized": { "type": "number", "minimum": 0, "maximum": 1 },
+            "weight": { "type": "number", "const": 0.10 },
+            "contribution": { "type": "number" },
+            "credentialCount": { "type": "integer", "minimum": 0 }
+          }
+        }
+      }
+    },
+    "calculatedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When this score was calculated."
+    },
+    "window": {
+      "type": "string",
+      "description": "Primary scoring window (e.g., '90d').",
+      "default": "90d"
+    },
+    "totalCredentials": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Total number of verified credentials contributing to this score."
+    },
+    "history": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "value": { "type": "integer", "minimum": 300, "maximum": 850 },
+          "calculatedAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "description": "Historical score values (optional, for trend analysis)."
+    }
+  },
+  "additionalProperties": false
+}

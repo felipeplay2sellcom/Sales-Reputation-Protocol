@@ -1,0 +1,52 @@
+{
+  "subjectDid": "did:key:z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK",
+  "score": {
+    "value": 742,
+    "tier": "very_good",
+    "range": {
+      "min": 300,
+      "max": 850
+    }
+  },
+  "dimensions": {
+    "performance": {
+      "normalized": 0.85,
+      "weight": 0.30,
+      "contribution": 0.255,
+      "credentialCount": 23
+    },
+    "reliability": {
+      "normalized": 0.78,
+      "weight": 0.25,
+      "contribution": 0.195,
+      "credentialCount": 12
+    },
+    "clientImpact": {
+      "normalized": 0.72,
+      "weight": 0.20,
+      "contribution": 0.144,
+      "credentialCount": 8
+    },
+    "professionalGrowth": {
+      "normalized": 0.65,
+      "weight": 0.15,
+      "contribution": 0.0975,
+      "credentialCount": 5
+    },
+    "peerTrust": {
+      "normalized": 0.60,
+      "weight": 0.10,
+      "contribution": 0.06,
+      "credentialCount": 3
+    }
+  },
+  "calculatedAt": "2026-03-09T00:00:00Z",
+  "window": "90d",
+  "totalCredentials": 51,
+  "history": [
+    { "value": 710, "calculatedAt": "2025-12-09T00:00:00Z" },
+    { "value": 725, "calculatedAt": "2026-01-09T00:00:00Z" },
+    { "value": 738, "calculatedAt": "2026-02-09T00:00:00Z" },
+    { "value": 742, "calculatedAt": "2026-03-09T00:00:00Z" }
+  ]
+}

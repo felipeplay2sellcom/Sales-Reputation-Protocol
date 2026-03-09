@@ -1,0 +1,38 @@
+{
+  "verified": true,
+  "credential": {
+    "id": "urn:uuid:b4c7e3f2-8a91-4d5e-b6c3-2f1e0d9a8b7c",
+    "type": "SalesReputationCredential",
+    "issuer": "did:web:acme-corp.com"
+  },
+  "checks": {
+    "signature": {
+      "passed": true,
+      "algorithm": "ecdsa-rdfc-2022"
+    },
+    "status": {
+      "passed": true,
+      "method": "BitstringStatusList",
+      "statusPurpose": "revocation",
+      "currentStatus": "active"
+    },
+    "expiration": {
+      "passed": true,
+      "validFrom": "2026-03-09T00:00:00Z",
+      "validUntil": "2027-03-09T00:00:00Z"
+    },
+    "issuerTrust": {
+      "passed": true,
+      "level": "platform_verified",
+      "score": 0.85,
+      "registeredAt": "2025-01-15T00:00:00Z"
+    },
+    "onChainAnchor": {
+      "passed": true,
+      "chain": "optimism",
+      "attestationUid": "0x1234567890abcdef...",
+      "txHash": "0xabcdef1234567890..."
+    }
+  },
+  "verifiedAt": "2026-03-09T14:30:00Z"
+}
