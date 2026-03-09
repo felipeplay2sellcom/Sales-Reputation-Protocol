@@ -1,0 +1,64 @@
+{
+  "name": "@srp/sdk",
+  "version": "0.1.0",
+  "description": "Official TypeScript SDK for the Sales Reputation Protocol",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./core": {
+      "import": "./dist/core/index.js",
+      "types": "./dist/core/index.d.ts"
+    },
+    "./client": {
+      "import": "./dist/client/index.js",
+      "types": "./dist/client/index.d.ts"
+    },
+    "./issuer": {
+      "import": "./dist/issuer/index.js",
+      "types": "./dist/issuer/index.d.ts"
+    },
+    "./verifier": {
+      "import": "./dist/verifier/index.js",
+      "types": "./dist/verifier/index.d.ts"
+    }
+  },
+  "files": ["dist", "README.md", "LICENSE"],
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint src/",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist",
+    "prepublishOnly": "npm run clean && npm run build"
+  },
+  "keywords": [
+    "sales-reputation-protocol",
+    "srp",
+    "verifiable-credentials",
+    "did",
+    "reputation",
+    "sales",
+    "open-badges"
+  ],
+  "author": "Felipe Santos",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/felipeplay2sellcom/Sales-Reputation-Protocol.git",
+    "directory": "sdk/typescript"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.7.0",
+    "vitest": "^3.0.0"
+  }
+}
