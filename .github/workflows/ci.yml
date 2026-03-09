@@ -3,18 +3,18 @@ name: CI
 on:
   push:
     branches: [main]
-    paths: [sdk/typescript/**]
+    paths: [sdk/typescript/**, server/**]
   pull_request:
     branches: [main]
-    paths: [sdk/typescript/**]
-
-defaults:
-  run:
-    working-directory: sdk/typescript
+    paths: [sdk/typescript/**, server/**]
 
 jobs:
-  ci:
+  sdk:
+    name: SDK (Node ${{ matrix.node-version }})
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: sdk/typescript
     strategy:
       matrix:
         node-version: [18, 20, 22]
@@ -25,6 +25,27 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: npm
           cache-dependency-path: sdk/typescript/package-lock.json
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run build
+      - run: npm test
+
+  server:
+    name: Server (Node ${{ matrix.node-version }})
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: server
+    strategy:
+      matrix:
+        node-version: [18, 20, 22]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: npm
+          cache-dependency-path: server/package-lock.json
       - run: npm ci
       - run: npm run typecheck
       - run: npm run build

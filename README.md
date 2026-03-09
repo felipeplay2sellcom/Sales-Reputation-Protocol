@@ -223,8 +223,8 @@ SRP builds on established open standards rather than reinventing the wheel:
 
 ## Roadmap
 
-- [x] **v0.1.0** — Protocol specification draft (current)
-- [ ] **v0.2.0** — Reference implementation (TypeScript SDK)
+- [x] **v0.1.0** — Protocol specification draft
+- [x] **v0.2.0** — Reference implementation (TypeScript SDK + API server)
 - [ ] **v0.3.0** — Issuer registry and trust framework
 - [ ] **v0.4.0** — On-chain anchoring (EAS on Optimism/Base)
 - [ ] **v0.5.0** — Zero-knowledge selective disclosure (BBS+)
