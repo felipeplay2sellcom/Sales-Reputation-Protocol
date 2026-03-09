@@ -256,6 +256,49 @@
       transform: translateY(-1px);
     }
 
+    /* ── Install Bar ─────────────────────────── */
+    .install-bar {
+      max-width: 560px;
+      margin: 32px auto 0;
+      display: flex;
+      align-items: center;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 4px 4px 4px 20px;
+      gap: 12px;
+    }
+
+    .install-bar code {
+      font-family: var(--mono);
+      font-size: 14px;
+      color: var(--text-secondary);
+      white-space: nowrap;
+      flex: 1;
+    }
+
+    .install-bar code span {
+      color: var(--text-muted);
+    }
+
+    .install-bar .copy-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-family: var(--mono);
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s;
+      flex-shrink: 0;
+    }
+
+    .install-bar .copy-btn:hover {
+      background: var(--bg-card-hover);
+      color: var(--text-primary);
+    }
+
     /* ── Stats Bar ───────────────────────────── */
     .stats {
       padding: 0 24px;
@@ -798,6 +841,10 @@
         View on GitHub
       </a>
     </div>
+    <div class="install-bar">
+      <code><span>$</span> npm install sales-reputation-protocol</code>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText('npm install sales-reputation-protocol').then(() => { this.textContent = 'Copied!'; setTimeout(() => this.textContent = 'Copy', 1500); })">Copy</button>
+    </div>
   </section>
 
   <!-- Stats -->
@@ -1097,6 +1144,7 @@
       <ul class="footer-links">
         <li><a href="https://github.com/felipeplay2sellcom/Sales-Reputation-Protocol/blob/main/spec/v0.1.0/overview.md" target="_blank">Spec</a></li>
         <li><a href="https://github.com/felipeplay2sellcom/Sales-Reputation-Protocol/tree/main/sdk/typescript" target="_blank">SDK</a></li>
+        <li><a href="https://www.npmjs.com/package/sales-reputation-protocol" target="_blank">npm</a></li>
         <li><a href="https://github.com/felipeplay2sellcom/Sales-Reputation-Protocol/blob/main/api/openapi.yaml" target="_blank">API</a></li>
         <li><a href="https://github.com/felipeplay2sellcom/Sales-Reputation-Protocol" target="_blank">GitHub</a></li>
         <li><a href="https://github.com/felipeplay2sellcom/Sales-Reputation-Protocol/discussions" target="_blank">Community</a></li>
