@@ -1,3 +1,4 @@
+import { webcrypto } from "node:crypto";
 import { SRP_CREDENTIAL_CONTEXTS, CREDENTIAL_TYPES } from "./constants.js";
 import type {
   Achievement,
@@ -131,7 +132,9 @@ export function buildEndorsementCredential(params: {
  * Generate a URN UUID for credential IDs.
  */
 export function generateCredentialId(): string {
-  return `urn:uuid:${crypto.randomUUID()}`;
+  const randomUUID = globalThis.crypto?.randomUUID?.bind(globalThis.crypto)
+    ?? webcrypto.randomUUID.bind(webcrypto);
+  return `urn:uuid:${randomUUID()}`;
 }
 
 // Helper to avoid circular imports
