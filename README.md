@@ -3,6 +3,8 @@
   <p align="center">
     An open standard for verifiable sales performance credentials.
     <br />
+    <a href="https://salesreputationprotocol.org"><strong>Website »</strong></a>
+    ·
     <a href="spec/v0.1.0/overview.md"><strong>Read the Spec »</strong></a>
     ·
     <a href="api/openapi.yaml"><strong>API Reference »</strong></a>
@@ -12,6 +14,7 @@
 </p>
 
 <p align="center">
+  <a href="https://salesreputationprotocol.org"><img src="https://img.shields.io/badge/website-salesreputationprotocol.org-6366f1.svg" alt="Website"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache%202.0-blue.svg" alt="License"></a>
   <a href="spec/v0.1.0/overview.md"><img src="https://img.shields.io/badge/spec-v0.1.0--draft-orange.svg" alt="Spec Version"></a>
   <a href="CONTRIBUTING.md"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"></a>
@@ -236,6 +239,7 @@ To propose a significant change, submit an [RFC](rfcs/RFC-TEMPLATE.md).
 
 ## Community
 
+- **Website**: [salesreputationprotocol.org](https://salesreputationprotocol.org)
 - **Discussions**: [GitHub Discussions](https://github.com/felipeplay2sellcom/Sales-Reputation-Protocol/discussions)
 - **Issues**: [GitHub Issues](https://github.com/felipeplay2sellcom/Sales-Reputation-Protocol/issues)
 - **RFCs**: [rfcs/](rfcs/)
